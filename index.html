@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tilahun's Tech Radar</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body {
+      background: #0a0a0a;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    svg {
+      background-color: transparent;
+    }
+    .label {
+      fill: #fff;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <script>
+    const data = [
+      { axis: "Java", value: 0.9 },
+      { axis: "C++", value: 0.8 },
+      { axis: "JavaScript", value: 0.95 },
+      { axis: "TypeScript", value: 0.9 },
+      { axis: "Python", value: 0.85 },
+      { axis: "Spring Boot", value: 0.8 },
+      { axis: "Node.js", value: 0.9 },
+      { axis: "React", value: 0.95 },
+      { axis: "Next.js", value: 0.85 },
+      { axis: "NestJS", value: 0.9 },
+      { axis: "MongoDB", value: 0.85 },
+      { axis: "PostgreSQL", value: 0.8 }
+    ];
+
+    const width = 600;
+    const height = 600;
+    const radius = Math.min(width, height) / 2 - 100;
+
+    const angleSlice = (Math.PI * 2) / data.length;
+
+    const svg = d3.select("body")
+      .append("svg")
+      .attr("width", width)
+      .attr("height", height);
+
+    const chart = svg.append("g")
+      .attr("transform", `translate(${width / 2},${height / 2})`);
+
+    // Draw the web
+    const levels = 5;
+    for (let level = 0; level < levels; level++) {
+      const r = radius * ((level + 1) / levels);
+      chart.append("circle")
+        .attr("r", r)
+        .attr("fill", "none")
+        .attr("stroke", "#444")
+        .attr("stroke-width", 0.5);
+    }
+
+    // Axis lines
+    data.forEach((d, i) => {
+      const angle = angleSlice * i - Math.PI / 2;
+      chart.append("line")
+        .attr("x1", 0)
+        .attr("y1", 0)
+        .attr("x2", radius * Math.cos(angle))
+        .attr("y2", radius * Math.sin(angle))
+        .attr("stroke", "#555");
+
+      chart.append("text")
+        .attr("class", "label")
+        .attr("x", (radius + 10) * Math.cos(angle))
+        .attr("y", (radius + 10) * Math.sin(angle))
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "middle")
+        .text(d.axis);
+    });
+
+    // Radar shape
+    const radarLine = d3.lineRadial()
+      .radius(d => d.value * radius)
+      .angle((d, i) => i * angleSlice)
+      .curve(d3.curveCardinalClosed);
+
+    chart.append("path")
+      .datum(data)
+      .attr("d", radarLine)
+      .attr("fill", "rgba(0, 140, 255, 0.4)")
+      .attr("stroke", "deepskyblue")
+      .attr("stroke-width", 2);
+  </script>
+</body>
+</html>
